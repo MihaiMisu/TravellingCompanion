@@ -1,0 +1,36 @@
+version: "3.7"
+
+services:
+  db:
+   image: postgres:13.1-alpine
+   container_name: TC-database
+# TODO: make config file with credentials
+   environment:
+     - POSTGRES_USER=TCAdmin
+     - POSTGRES_PASSWORD=TCPassword
+     - POSTGRES_DB=TCDB
+   ports:
+     - 5433:5432
+   volumes:
+     - pgdata:/var/lib/postgresql/data
+
+  web:
+    container_name: TC-backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - 8001:8000
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - db
+    command: >
+      sh -c "
+            python ./travell_companion/manage.py makemigrations
+            python ./travell_companion/manage.py migrate
+            python ./travell_companion/manage.py runserver 0.0.0.0:8000
+      "
+
+volumes:
+ pgdata:
