@@ -6,7 +6,28 @@ having to bother about your schedule, cities or how much money you have left <br
 
 # Getting started
 
-To bring the code alive, all you need to do is to run the following command in the project's root folder:
+To bring the code alive, it's needed a config file to be saved at /backend/config.json.<br>
+The template is the following one:<br>
+
+```json
+{
+  "env": "<local/prod>",
+  "allowedHosts": [<list of IPs>],
+  "secret": <django_secret_key>,
+  "DB_CONFIG": {
+    "default": {
+      "ENGINE": "django.db.backends.postgresql",
+      "NAME": "<DB_name>",
+      "USER": "<DB_user>",
+      "PASSWORD": "<DB_password>",
+      "HOST": "<HOST>",
+      "PORT": <PORT>
+    }
+  }
+}
+```
+
+After setting up the config run the following command in the project's root folder:
 
 ```docker compose up --build```
 
