@@ -22,14 +22,14 @@ services:
     ports:
       - 8001:8000
     volumes:
-      - ./backend:/app
+      - ./backend:/usr/tc/backend
     depends_on:
       - db
     command: >
       sh -c "
-            python ./travell_companion/manage.py makemigrations
-            python ./travell_companion/manage.py migrate
-            python ./travell_companion/manage.py runserver 0.0.0.0:8000
+        python ./backend/travell_companion/manage.py makemigrations
+        python ./backend/travell_companion/manage.py migrate
+        python ./backend/travell_companion/manage.py runserver 0.0.0.0:8000
       "
 
 volumes:

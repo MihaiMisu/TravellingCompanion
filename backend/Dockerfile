@@ -1,11 +1,12 @@
 FROM python:3.7.10-slim-buster
 
-ADD ./requirements.txt /app/requirements.txt
+ADD . /usr/tc/backend
+WORKDIR /usr/tc/
 
-RUN pip install --upgrade pip && pip install --no-cache-dir -r /app/requirements.txt
-ADD . /app
-WORKDIR /app
+RUN pip install --upgrade pip && pip install --no-cache-dir -r ./backend/requirements.txt
 
+
+ENV PYTHONPATH=$PYTHONPATH::/usr/tc/backend/travell_companion:/usr:/usr/tc
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
 
