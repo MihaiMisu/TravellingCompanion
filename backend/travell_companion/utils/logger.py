@@ -15,19 +15,18 @@ CONFIG_DICT = {
         'handlers': {
             'console': {
                 'class': 'logging.StreamHandler',
-                'level': 'DEBUG',
             },
             'file': {
                 'class': 'logging.FileHandler',
                 'filename': LOGGER_FPATH,
                 'mode': 'a',
                 'formatter': 'detailed',
-                'level': 'DEBUG'
             },
         },
         'loggers': {
             'tc_logger': {
-                'handlers': ['file']
+                'handlers': ['file'],
+                'level': 'DEBUG'
             }
         }
     }

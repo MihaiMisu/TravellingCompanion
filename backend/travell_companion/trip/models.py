@@ -49,6 +49,13 @@ class Trip(Model):
         return self.name
 
     @staticmethod
+    def get_by_id(trip_id):
+        try:
+            return Trip.objects.get(trip_id=trip_id)
+        except Trip.DoesNotExist:
+            return None
+
+    @staticmethod
     def filter_by_name(name):
         try:
             return Trip.objects.filter(name=name)
