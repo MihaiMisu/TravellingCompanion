@@ -14,7 +14,7 @@ class UserAdmin(ModelAdmin):
 
 class TripAdmin(ModelAdmin):
     list_display = ('name', 'starting_time', 'duration', 'cost_estimation')
-    readonly_fields = ('created_at', 'updated_at')
+    readonly_fields = ('trip_id', 'created_at', 'updated_at')
 
 
 class TripCompanionAdmin(ModelAdmin):
