@@ -2,7 +2,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import Serializer
 from rest_framework.fields import CharField, UUIDField, ListField, FloatField, IntegerField, DateTimeField
 
-from .models import Trip, User
+from .models import Trip, User, City, TripCity
 from backend.travell_companion.utils import logger
 
 
@@ -129,6 +129,46 @@ class TripPatchSerializer(Serializer):
         # check if the trip owner/user creator is not within the companions list
         if data.get('userId') in data.get('companions'):
             err_msg = f'Trip owner cannot be within the companions list.'
+            logger.error(err_msg)
+            raise ValidationError(err_msg)
+
+        return data
+
+
+class TripCityPostSerializer(Serializer):
+    cityId = UUIDField(required=True)
+    destinationOrder = IntegerField(required=True, min_value=1)
+
+    def __init__(self, trip_id, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.trip_id = trip_id
+
+    def validate(self, data):
+
+        trip = Trip.get_by_id(self.trip_id)
+        if not Trip.get_by_id(self.trip_id):
+            err_msg = f"Trip not found"
+            logger.error(err_msg)
+            raise ValidationError(err_msg)
+
+        city = City.get_by_id(data['cityId'])
+        if not city:
+            err_msg = f"City {data['cityId']} does not exist."
+            logger.error(err_msg)
+            raise ValidationError(err_msg)
+
+        if TripCity.objects.filter(trip=trip, dest_city_order=data['destinationOrder']):
+            err_msg = f"Already existing destination nb {data['destinationOrder']} for trip {self.trip_id}"
+            logger.error(err_msg)
+            raise ValidationError(err_msg)
+
+        if TripCity.objects.filter(trip=trip, city=city):
+            err_msg = 'Trip-City destination already existing with different order index.'
+            logger.error(err_msg)
+            raise ValidationError(err_msg)
+
+        if TripCity.objects.filter(trip=trip, city=city, dest_city_order=data['destinationOrder']):
+            err_msg = 'Trip-City-DestinationOrder already existing.'
             logger.error(err_msg)
             raise ValidationError(err_msg)
 
