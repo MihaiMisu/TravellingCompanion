@@ -1,6 +1,6 @@
 from django.contrib.admin import site, ModelAdmin
 
-from .models import Trip, User, TripCompanion
+from .models import Trip, User, TripCompanion, City, TripCity
 
 
 class UserAdmin(ModelAdmin):
@@ -30,6 +30,18 @@ class TripCompanionAdmin(ModelAdmin):
     user_name.short_description = 'User name'
 
 
+class CityAdmin(ModelAdmin):
+    list_display = ('city_name', 'country', 'population', 'rating')
+    readonly_fields = ('city_id', 'created_at', 'updated_at')
+
+
+class TripCityAdmin(ModelAdmin):
+    list_display = ('city', 'trip', 'dest_city_order')
+    readonly_fields = ('created_at', 'updated_at')
+
+
 site.register(User, UserAdmin)
 site.register(Trip, TripAdmin)
 site.register(TripCompanion, TripCompanionAdmin)
+site.register(City, CityAdmin)
+site.register(TripCity, TripCityAdmin)

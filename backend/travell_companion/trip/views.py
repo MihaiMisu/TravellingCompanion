@@ -1,8 +1,8 @@
 from django.http import JsonResponse
 from django.forms.models import model_to_dict
 
-from .models import Trip, User, TripCompanion
-from .validators import TripPostSerializer, TripPutSerializer, TripPatchSerializer
+from .models import Trip, User, TripCompanion, City, TripCity
+from .validators import TripPostSerializer, TripPutSerializer, TripPatchSerializer, TripCityPostSerializer
 from backend.travell_companion.utils import APIView, get_payload, logger
 
 
@@ -121,5 +121,36 @@ class TripAPI(APIView):
                 [TripCompanion(trip_id=trip, user_id=c) for c in companion_qset]
             )
             len(companion_qset) and logger.info(f"Saved companions {req_data['companions']} to trip {trip.trip_id}")
+
+        return JsonResponse({'success': req_data, 'error': {}})
+
+
+class DestinationAPI(APIView):
+
+    def get(self, _, trip_id):
+        trip = Trip.get_by_id(trip_id)
+        destinations = TripCity.objects.filter(trip=trip).order_by('dest_city_order')
+
+        trip_details = model_to_dict(trip)
+        dest_list = [model_to_dict(d) for d in destinations]
+        trip_details.update({'destinations': dest_list})
+
+        return JsonResponse({'success': trip_details, 'error': {}})
+
+    def post(self, request, trip_id):
+        # Load JSON body and validate
+        req_data = get_payload(request.body)
+        body = TripCityPostSerializer(trip_id, data=req_data)
+        if not body.is_valid():
+            return JsonResponse({'error': body.errors}, status=400)
+        req_data = body.data
+
+        trip_city = TripCity(
+            city=City.objects.get(city_id=req_data['cityId']),
+            trip=Trip.objects.get(trip_id=trip_id),
+            dest_city_order=req_data['destinationOrder']
+        )
+        trip_city.save()
+        logger.info(f'Added trip destination {req_data["cityId"]} to trip {trip_id}')
 
         return JsonResponse({'success': req_data, 'error': {}})
