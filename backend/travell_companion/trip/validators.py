@@ -21,13 +21,14 @@ class TripPostSerializer(Serializer):
         """
 
         # Check if user/trip creator exists
-        if not User.get_by_id(data['userId']):
+        user = User.get_by_id(data['userId'])
+        if not user:
             err_msg = f"User ('{data['userId']}') does not exists"
             logger.error(err_msg)
             raise ValidationError(err_msg)
 
         # Check if there exists already a trip with the same name for a given user
-        if Trip.filter_by_name(data['tripName']) and Trip.filter_by_owner(data['userId']):
+        if Trip.objects.filter(name=data['tripName'], owner_id=user):
             err_msg = f"A trip with the same name ('{data['tripName']}') already exists for this user {data['userId']}."
             logger.error(err_msg)
             raise ValidationError(err_msg)
