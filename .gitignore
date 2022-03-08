@@ -130,3 +130,5 @@ dmypy.json
 
 .idea
 config.json
+env_config
+db_env
