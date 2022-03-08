@@ -15,6 +15,8 @@ class TripAPI(APIView):
 
         # Get trip by ID and convert to dict
         trip = Trip.get_by_id(trip_id)
+        if not trip:
+            return JsonResponse({'success': {}, 'error': {'message': 'Trip not found'}}, status=404)
         trip_details = model_to_dict(trip or Trip())
 
         # Get trip companions and add data to dict

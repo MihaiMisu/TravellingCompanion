@@ -4,11 +4,8 @@ services:
   db:
    image: postgres:13.1-alpine
    container_name: TC-database
-# TODO: make config file with credentials
-   environment:
-     - POSTGRES_USER=TCAdmin
-     - POSTGRES_PASSWORD=TCPassword
-     - POSTGRES_DB=TCDB
+   env_file:
+     - ./db_env
    ports:
      - 5433:5432
    volumes:
@@ -25,11 +22,17 @@ services:
       - ./backend:/usr/tc/backend
     depends_on:
       - db
+    env_file:
+      - ./backend/env_config
     command: >
       sh -c "
-        python ./backend/travell_companion/manage.py makemigrations
-        python ./backend/travell_companion/manage.py migrate
-        python ./backend/travell_companion/manage.py runserver 0.0.0.0:8000
+        coverage run --source='.' ./manage.py test
+        coverage html
+        python ./manage.py check
+        python ./manage.py makemigrations
+        python ./manage.py migrate
+        python ./manage.py createsuperuser --no-input
+        python ./manage.py runserver 0.0.0.0:8000
       "
 
 volumes:

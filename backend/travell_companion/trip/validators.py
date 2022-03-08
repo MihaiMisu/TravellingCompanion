@@ -13,7 +13,7 @@ class TripPostSerializer(Serializer):
     duration = IntegerField(required=True, min_value=0)
     costEstimation = FloatField(required=True)
     description = CharField(required=False, allow_blank=True, max_length=500, default='')
-    companions = ListField(required=True, allow_empty=True, child=UUIDField())
+    companions = ListField(required=False, allow_empty=True, child=UUIDField(), default=[])
 
     def validate(self, data):
         """
